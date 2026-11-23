@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Жаркын — школьный дневник</title>
+  <style>
+    :root {
+      --ink: #202744;
+      --muted: #7e879e;
+      --bg: #f5f6fc;
+      --purple: #7558e8;
+      --pink: #fa7798;
+      --cyan: #38c4cb;
+      --line: #eceef6;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 14px/1.45 system-ui, "Segoe UI", sans-serif;
+    }
+
+    button, select, input { font: inherit; }
+    button { cursor: pointer; }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+    }
+
+    aside {
+      padding: 22px 15px;
+      background: white;
+      border-right: 1px solid var(--line);
+    }
+
+    .brand {
+      margin: 4px 7px 24px;
+      font-size: 21px;
+      font-weight: 850;
+    }
+
+    .brand span {
+      display: inline-grid;
+      width: 38px;
+      height: 38px;
+      margin-right: 8px;
+      place-items: center;
+      border-radius: 13px;
+      color: white;
+      background: linear-gradient(135deg, #9b7cff, #fb7c9d);
+    }
+
+    .school {
+      padding: 13px;
+      margin-bottom: 24px;
+      border-radius: 14px;
+      background: #f2efff;
+    }
+
+    .school small { color: var(--muted); }
+
+    .nav-title {
+      margin: 0 10px 8px;
+      color: #9aa2b6;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    nav { display: grid; gap: 4px; }
+
+    nav button {
+      padding: 11px;
+      border: 0;
+      border-radius: 11px;
+      background: transparent;
+      color: #737e98;
+      text-align: left;
+      font-weight: 700;
+    }
+
+    nav button:hover, nav button.active {
+      background: #eeeaff;
+      color: #6449df;
+    }
+
+    nav button span {
+      display: inline-block;
+      width: 27px;
+    }
+
+    main {
+      width: 100%;
+      max-width: 1450px;
+      margin: auto;
+      padding: 25px 32px;
+    }
+
+    .top, .page-head, .row, .card-head, .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .top {
+      margin-bottom: 26px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .top button, select, input, .soft {
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: white;
+      color: var(--ink);
+    }
+
+    .page-head {
+      align-items: flex-end;
+      margin-bottom: 20px;
+    }
+
+    .kicker {
+      color: var(--purple);
+      font-size: 10px;
+      font-weight: 850;
+      letter-spacing: 1px;
+    }
+
+    h1 { margin: 4px 0; font-size: 28px; }
+    .page-head p { margin: 0; color: var(--muted); }
+
+    .primary {
+      padding: 10px 14px;
+      border: 0;
+      border-radius: 11px;
+      background: var(--purple);
+      color: white;
+      font-weight: 750;
+    }
+
+    .grid { display: grid; gap: 15px; }
+    .stats { grid-template-columns: repeat(4, 1fr); margin-bottom: 16px; }
+    .two { grid-template-columns: 1.4fr 1fr; }
+    .three { grid-template-columns: repeat(3, 1fr); }
+
+    .card, .stat {
+      padding: 17px;
+      border: 1px solid #eff0f7;
+      border-radius: 17px;
+      background: white;
+      box-shadow: 0 10px 32px #2834660d;
+    }
+
+    .stat label { color: var(--muted); font-size: 11px; font-weight: 700; }
+    .stat strong { display: block; margin: 7px 0; font-size: 29px; }
+    .stat small { color: var(--muted); }
+
+    .card-head { margin-bottom: 14px; }
+    .card-head h2 { margin: 0; font-size: 15px; }
+    .card-head p { margin: 3px 0; color: var(--muted); font-size: 11px; }
+
+    .bars {
+      display: flex;
+      height: 170px;
+      align-items: end;
+      justify-content: space-around;
+      background: repeating-linear-gradient(
+        to bottom, transparent 0, transparent 42px, #f0f1f7 43px
+      );
+    }
+
+    .pair { display: flex; height: 100%; align-items: end; gap: 4px; }
+    .bar {
+      width: 12px;
+      border-radius: 6px 6px 0 0;
+      background: linear-gradient(#ab99ff, #7459e9);
+    }
+    .bar.pink { background: linear-gradient(#ffc4d2, #f57698); }
+
+    .days {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .event { display: flex; align-items: center; gap: 10px; margin: 14px 0; }
+    .date {
+      padding: 7px 10px;
+      border-radius: 10px;
+      background: #f0edff;
+      color: var(--purple);
+      text-align: center;
+      font-weight: 850;
+    }
+    .date small { display: block; font-size: 9px; }
+    .event b { font-size: 11px; }
+    .event p { margin: 2px 0; color: var(--muted); font-size: 10px; }
+
+    .table-card { margin-top: 16px; }
+    .table-wrap { overflow: auto; }
+    table { width: 100%; border-collapse: collapse; white-space: nowrap; }
+    th {
+      padding: 10px;
+      border-bottom: 1px solid var(--line);
+      color: #9ba3b7;
+      font-size: 9px;
+      text-align: left;
+      text-transform: uppercase;
+    }
+    td {
+      padding: 11px 10px;
+      border-bottom: 1px solid #f1f2f7;
+      font-size: 11px;
+    }
+
+    .avatar {
+      display: inline-grid;
+      width: 29px;
+      height: 29px;
+      margin-right: 8px;
+      place-items: center;
+      border-radius: 10px;
+      background: #f0edff;
+      color: var(--purple);
+      font-weight: 800;
+    }
+
+    .badge {
+      padding: 5px 8px;
+      border-radius: 20px;
+      background: #eaf8f1;
+      color: #289775;
+      font-size: 9px;
+      font-weight: 800;
+    }
+
+    .toolbar { justify-content: flex-start; flex-wrap: wrap; margin-bottom: 13px; }
+    .section[hidden] { display: none; }
+
+    .schedule {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(140px, 1fr));
+      gap: 10px;
+      overflow: auto;
+    }
+
+    .day { padding: 12px; border: 1px solid var(--line); border-radius: 14px; background: white; }
+    .day h3 { font-size: 12px; }
+    .lesson {
+      padding: 8px;
+      margin: 7px 0;
+      border-left: 3px solid var(--purple);
+      border-radius: 9px;
+      background: #f4f1ff;
+      font-size: 10px;
+    }
+    .lesson small { display: block; color: var(--muted); }
+
+    .notice { border-left: 4px solid var(--pink); }
+    .notice h3 { margin: 0 0 7px; font-size: 14px; }
+    .notice p, .notice small { color: var(--muted); font-size: 11px; }
+
+    .teacher { display: flex; align-items: center; gap: 10px; }
+    .setting { padding: 14px 0; border-bottom: 1px solid var(--line); }
+    .setting p { margin: 3px 0; color: var(--muted); font-size: 10px; }
+    .foot { margin-top: 20px; color: #9ba3b7; font-size: 10px; text-align: center; }
+
+    @media (max-width: 900px) {
+      .app { grid-template-columns: 190px 1fr; }
+      main { padding: 20px; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .two { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 650px) {
+      .app { display: block; }
+      aside { position: sticky; top: 0; z-index: 2; padding: 8px; }
+      .brand, .school, .nav-title { display: none; }
+      nav { display: flex; overflow: auto; }
+      nav button { padding: 8px; white-space: nowrap; }
+      main { padding: 15px 11px; }
+      .page-head { align-items: flex-start; flex-direction: column; }
+      .three { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="brand"><span>Ж</span>Жаркын</div>
+    <div class="school">🏫 <b data-i="school">Школа № 24</b><br><small>Бишкек · Кыргызстан</small></div>
+    <div class="nav-title" data-i="menu">ГЛАВНОЕ МЕНЮ</div>
+    <nav id="nav">
+      <button class="active" data-page="dashboard"><span>◫</span><b data-i="dashboard">Дашборд</b></button>
+      <button data-page="journal"><span>▤</span><b data-i="journal">Журнал</b></button>
+      <button data-page="schedule"><span>▦</span><b data-i="schedule">Расписание</b></button>
+      <button data-page="students"><span>♧</span><b data-i="students">Ученики / родители</b></button>
+      <button data-page="teachers"><span>♙</span><b data-i="teachers">Учителя</b></button>
+      <button data-page="announcements"><span>◉</span><b data-i="announcements">Объявления</b></button>
+      <button data-page="reports"><span>▥</span><b data-i="reports">Отчёты</b></button>
+      <button data-page="admin"><span>⚙</span><b data-i="admin">Администрирование</b></button>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="top">
+      <div><span data-i="school">Школа № 24</span> › <strong id="crumb">Дашборд</strong></div>
+      <button id="language">РУС / KG</button>
+    </div>
+
+    <section class="section" id="page-dashboard">
+      <div class="page-head">
+        <div>
+          <div class="kicker" data-i="today">ПОНЕДЕЛЬНИК, 23 НОЯБРЯ</div>
+          <h1 data-i="welcome">Доброе утро! ☀️</h1>
+          <p data-i="welcomeSub">Вот что происходит в вашей школе сегодня.</p>
+        </div>
+        <div class="row">
+          <select class="class-select">
+            <option value="all" data-i="allClasses">Все классы</option>
+            <option value="5">5 класс</option>
+            <option value="7">7 класс</option>
+            <option value="9">9 класс</option>
+          </select>
+          <button class="primary" onclick="go('journal')" data-i="addGrade">＋ Добавить оценку</button>
+        </div>
+      </div>
+
+      <div class="grid stats">
+        <div class="stat"><label data-i="total">Всего учеников</label><strong>60</strong><small data-i="classCount">3 класса · 20 в каждом</small></div>
+        <div class="stat"><label data-i="attendance">Посещаемость сегодня</label><strong>94%</strong><small data-i="weekCompare">↑ 2% к прошлой неделе</small></div>
+        <div class="stat"><label data-i="average">Средний балл</label><strong>4.3</strong><small data-i="quarter">За эту четверть</small></div>
+        <div class="stat"><label data-i="teachersLabel">Учителя</label><strong>12</strong><small data-i="lessonsNow">8 уроков сейчас</small></div>
+      </div>
+
+      <div class="grid two">
+        <div class="card">
+          <div class="card-head"><div><h2 data-i="performance">Успеваемость</h2><p data-i="averageBySubject">Средний балл по предметам</p></div></div>
+          <div class="bars">
+            <div class="pair"><i class="bar" style="height:70%"></i><i class="bar pink" style="height:60%"></i></div>
+            <div class="pair"><i class="bar" style="height:62%"></i><i class="bar pink" style="height:52%"></i></div>
+            <div class="pair"><i class="bar" style="height:88%"></i><i class="bar pink" style="height:78%"></i></div>
+            <div class="pair"><i class="bar" style="height:69%"></i><i class="bar pink" style="height:59%"></i></div>
+            <div class="pair"><i class="bar" style="height:80%"></i><i class="bar pink" style="height:70%"></i></div>
+            <div class="pair"><i class="bar" style="height:58%"></i><i class="bar pink" style="height:48%"></i></div>
+            <div class="pair"><i class="bar" style="height:91%"></i><i class="bar pink" style="height:81%"></i></div>
+          </div>
+          <div class="days"><span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h2 data-i="events">Ближайшие события</h2></div>
+          <div class="event"><div class="date">25<small data-i="nov">ноя</small></div><div><b data-i="event1">Родительское собрание</b><p data-i="place1">Актовый зал · 17:30</p></div></div>
+          <div class="event"><div class="date">28<small data-i="nov">ноя</small></div><div><b data-i="event2">Олимпиада по математике</b><p data-i="place2">Кабинет 205 · 10:00</p></div></div>
+          <div class="event"><div class="date">02<small data-i="dec">дек</small></div><div><b data-i="event3">Осенний концерт</b><p data-i="place3">Большой зал · 14:00</p></div></div>
+        </div>
+      </div>
+
+      <div class="card table-card">
+        <div class="card-head"><h2 data-i="recent">Последние оценки</h2></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th data-i="student">Ученик</th><th data-i="class">Класс</th><th data-i="subject">Предмет</th><th data-i="grade">Оценка</th><th data-i="date">Дата</th></tr></thead>
+          <tbody id="recentRows"></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <section class="section" id="page-journal" hidden>
+      <div class="page-head">
+        <div><div class="kicker" data-i="learning">УЧЕБНЫЙ ПРОЦЕСС</div><h1 data-i="journalTitle">Классный журнал</h1><p data-i="journalSub">Оценки учеников за неделю.</p></div>
+        <button class="primary" data-i="addGrade" onclick="alert(translations[language].demoButton)">＋ Добавить оценку</button>
+      </div>
+      <div class="card">
+        <div class="toolbar">
+          <select class="class-select">
+            <option value="5">5 класс</option><option value="7">7 класс</option><option value="9">9 класс</option>
+          </select>
+          <input id="searchJournal" data-placeholder="searchStudent" placeholder="Поиск ученика...">
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr><th data-i="student">Ученик</th><th>Пн</th><th>Вт</th><th>Ср</th><th>Чт</th><th>Пт</th><th data-i="average">Средний балл</th></tr></thead>
+          <tbody id="journalRows"></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <section class="section" id="page-schedule" hidden>
+      <div class="page-head"><div><div class="kicker" data-i="week">УЧЕБНАЯ НЕДЕЛЯ</div><h1 data-i="scheduleTitle">Расписание уроков</h1><p data-i="shift">Первая смена</p></div>
+        <select class="class-select"><option value="5">5 класс</option><option value="7">7 класс</option><option value="9">9 класс</option></select>
+      </div>
+      <div class="schedule" id="scheduleGrid"></div>
+    </section>
+
+    <section class="section" id="page-students" hidden>
+      <div class="page-head"><div><div class="kicker" data-i="community">ШКОЛЬНОЕ СООБЩЕСТВО</div><h1 data-i="studentTitle">Ученики и родители</h1><p data-i="studentSub">Список учеников и контакты родителей.</p></div>
+        <button class="primary" data-i="addStudent" onclick="alert(translations[language].demoButton)">＋ Добавить ученика</button>
+      </div>
+      <div class="card">
+        <div class="toolbar">
+          <select class="class-select"><option value="5">5 класс</option><option value="7">7 класс</option><option value="9">9 класс</option></select>
+          <input id="searchStudent" data-placeholder="searchName" placeholder="Поиск по имени...">
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr><th data-i="student">Ученик</th><th data-i="class">Класс</th><th data-i="parent">Родитель / опекун</th><th data-i="contact">Контакт</th><th data-i="attendance">Посещаемость</th></tr></thead>
+          <tbody id="studentRows"></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <section class="section" id="page-teachers" hidden>
+      <div class="page-head"><div><div class="kicker" data-i="team">НАША КОМАНДА</div><h1 data-i="teacherTitle">Учителя</h1><p data-i="teacherSub">Педагогический состав школы.</p></div>
+        <button class="primary" data-i="addTeacher" onclick="alert(translations[language].demoButton)">＋ Добавить учителя</button>
+      </div>
+      <div class="grid three" id="teacherGrid"></div>
+    </section>
+
+    <section class="section" id="page-announcements" hidden>
+      <div class="page-head"><div><div class="kicker" data-i="news">НОВОСТИ ШКОЛЫ</div><h1 data-i="announceTitle">Объявления</h1><p data-i="announceSub">Новости для учеников и родителей.</p></div>
+        <button class="primary" data-i="create" onclick="alert(translations[language].demoButton)">＋ Создать объявление</button>
+      </div>
+      <div class="grid two">
+        <article class="card notice"><h3 data-i="event1">Родительское собрание</h3><p data-i="notice1">Приглашаем родителей 5, 7 и 9 классов. Обсудим итоги четверти.</p><small data-i="noticeDate1">25 ноября · 17:30</small></article>
+        <article class="card notice"><h3 data-i="event2">Олимпиада по математике</h3><p data-i="notice2">Школьный этап для учеников 5, 7 и 9 классов.</p><small data-i="noticeDate2">28 ноября · 10:00</small></article>
+        <article class="card notice"><h3 data-i="event3">Осенний концерт</h3><p data-i="notice3">Приглашаем всех на праздничный концерт!</p><small data-i="noticeDate3">2 декабря · 14:00</small></article>
+      </div>
+    </section>
+
+    <section class="section" id="page-reports" hidden>
+      <div class="page-head"><div><div class="kicker" data-i="analytics">АНАЛИТИКА</div><h1 data-i="reportsTitle">Отчёты школы</h1><p data-i="reportsSub">Сводка за текущую четверть.</p></div><button class="soft" onclick="window.print()" data-i="print">Печать / PDF</button></div>
+      <div class="grid three">
+        <div class="card"><b data-i="attendance">Посещаемость</b><h1>94%</h1></div>
+        <div class="card"><b data-i="performance">Успеваемость</b><h1>4.3 / 5</h1></div>
+        <div class="card"><b data-i="total">Всего учеников</b><h1>60</h1></div>
+      </div>
+      <div class="card table-card"><h2 data-i="summary">Сводка по классам</h2>
+        <div class="table-wrap"><table>
+          <thead><tr><th data-i="class">Класс</th><th data-i="total">Учеников</th><th data-i="attendance">Посещаемость</th><th data-i="average">Средний балл</th></tr></thead>
+          <tbody>
+            <tr><td>5</td><td>20</td><td>96%</td><td>4.4</td></tr>
+            <tr><td>7</td><td>20</td><td>93%</td><td>4.2</td></tr>
+            <tr><td>9</td><td>20</td><td>92%</td><td>4.3</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <section class="section" id="page-admin" hidden>
+      <div class="page-head"><div><div class="kicker" data-i="settings">НАСТРОЙКИ ШКОЛЫ</div><h1 data-i="adminTitle">Администрирование</h1><p data-i="adminSub">Управление учебным годом и настройками.</p></div></div>
+      <div class="card">
+        <h2 data-i="general">Общие настройки</h2>
+        <div class="setting"><b data-i="school">Школа № 24</b><p data-i="schoolName">Название учебного заведения</p></div>
+        <div class="setting"><b>2026–2027</b><p data-i="academicYear">Учебный год</p></div>
+        <div class="setting"><b data-i="parentNotify">Уведомления родителям</b><p data-i="notifySub">Сообщения об оценках и пропусках</p><input type="checkbox" checked></div>
+        <div class="setting"><b data-i="bilingual">Русский и кыргызский языки</b><p data-i="interfaceLang">Язык интерфейса дневника</p></div>
+      </div>
+    </section>
+
+    <div class="foot" data-i="demo">Демонстрационный макет. Имена и данные вымышленные.</div>
+  </main>
+</div>
+
+<script>
+const translations = {
+  ru: {
+    school:"Школа № 24", menu:"ГЛАВНОЕ МЕНЮ",
+    dashboard:"Дашборд", journal:"Журнал", schedule:"Расписание",
+    students:"Ученики / родители", teachers:"Учителя",
+    announcements:"Объявления", reports:"Отчёты", admin:"Администрирование",
+    today:"ПОНЕДЕЛЬНИК, 23 НОЯБРЯ", welcome:"Доброе утро! ☀️",
+    welcomeSub:"Вот что происходит в вашей школе сегодня.",
+    addGrade:"＋ Добавить оценку", total:"Всего учеников",
+    classCount:"3 класса · 20 в каждом", allClasses:"Все классы",
+    attendance:"Посещаемость сегодня", weekCompare:"↑ 2% к прошлой неделе",
+    average:"Средний балл", quarter:"За эту четверть",
+    teachersLabel:"Учителя", lessonsNow:"8 уроков сейчас",
+    performance:"Успеваемость", averageBySubject:"Средний балл по предметам",
+    events:"Ближайшие события", nov:"ноя", dec:"дек",
+    event1:"Родительское собрание", event2:"Олимпиада по математике",
+    event3:"Осенний концерт", place1:"Актовый зал · 17:30",
+    place2:"Кабинет 205 · 10:00", place3:"Большой зал · 14:00",
+    recent:"Последние оценки", student:"Ученик", class:"Класс",
+    subject:"Предмет", grade:"Оценка", date:"Дата",
+    learning:"УЧЕБНЫЙ ПРОЦЕСС", journalTitle:"Классный журнал",
+    journalSub:"Оценки учеников за неделю.", searchStudent:"Поиск ученика...",
+    scheduleTitle:"Расписание уроков", shift:"Первая смена",
+    week:"УЧЕБНАЯ НЕДЕЛЯ", community:"ШКОЛЬНОЕ СООБЩЕСТВО",
+    studentTitle:"Ученики и родители",
+    studentSub:"Список учеников и контакты родителей.",
+    addStudent:"＋ Добавить ученика", searchName:"Поиск по имени...",
+    parent:"Родитель / опекун", contact:"Контакт",
+    team:"НАША КОМАНДА", teacherTitle:"Учителя",
+    teacherSub:"Педагогический состав школы.", addTeacher:"＋ Добавить учителя",
+    news:"НОВОСТИ ШКОЛЫ", announceTitle:"Объявления",
+    announceSub:"Новости для учеников и родителей.",
+    create:"＋ Создать объявление",
+    notice1:"Приглашаем родителей 5, 7 и 9 классов. Обсудим итоги четверти.",
+    notice2:"Школьный этап для учеников 5, 7 и 9 классов.",
+    notice3:"Приглашаем всех на праздничный концерт!",
+    noticeDate1:"25 ноября · 17:30", noticeDate2:"28 ноября · 10:00",
+    noticeDate3:"2 декабря · 14:00", analytics:"АНАЛИТИКА",
+    reportsTitle:"Отчёты школы", reportsSub:"Сводка за текущую четверть.",
+    print:"Печать / PDF", summary:"Сводка по классам",
+    settings:"НАСТРОЙКИ ШКОЛЫ",
+    adminTitle:"Администрирование",
+    adminSub:"Управление учебным годом и настройками.",
+    general:"Общие настройки", schoolName:"Название учебного заведения",
+    academicYear:"Учебный год", parentNotify:"Уведомления родителям",
+    notifySub:"Сообщения об оценках и пропусках",
+    bilingual:"Русский и кыргызский языки",
+    interfaceLang:"Язык интерфейса дневника",
+    demo:"Демонстрационный макет. Имена и данные вымышленные.",
+    demoButton:"Это демонстрационный макет.",
+    dayNames:["Понедельник","Вторник","Среда","Четверг","Пятница"],
+    subjects:["Математика","Русский язык","История","Кыргызский язык","Биология","Физкультура"]
+  },
+  kg: {
+    school:"№ 24 мектеп", menu:"НЕГИЗГИ МЕНЮ",
+    dashboard:"Башкы бет", journal:"Журнал", schedule:"Сабак жадыбалы",
+    students:"Окуучулар / ата-энелер", teachers:"Мугалимдер",
+    announcements:"Жарыялар", reports:"Отчёттор", admin:"Башкаруу",
+    today:"ДҮЙШӨМБҮ, 23-НОЯБРЬ", welcome:"Кутман таң! ☀️",
+    welcomeSub:"Бүгүн мектебиңизде болуп жаткан окуялар.",
+    addGrade:"＋ Баа кошуу", total:"Окуучулардын саны",
+    classCount:"3 класс · ар биринде 20 окуучу", allClasses:"Бардык класстар",
+    attendance:"Бүгүнкү катышуу", weekCompare:"↑ 2% өткөн жумага салыштырмалуу",
+    average:"Орточо баа", quarter:"Бул чейректеги баа",
+    teachersLabel:"Мугалимдер", lessonsNow:"Азыр 8 сабак өтүүдө",
+    performance:"Окуу жетишкендиги", averageBySubject:"Сабактар боюнча орточо баа",
+    events:"Жакындагы окуялар", nov:"ноя", dec:"дек",
+    event1:"Ата-энелер чогулушу", event2:"Математика олимпиадасы",
+    event3:"Күзгү концерт", place1:"Жыйындар залы · 17:30",
+    place2:"205-кабинет · 10:00", place3:"Чоң зал · 14:00",
+    recent:"Акыркы баалар", student:"Окуучу", class:"Класс",
+    subject:"Сабак", grade:"Баа", date:"Дата",
+    learning:"ОКУУ ПРОЦЕССИ", journalTitle:"Класс журналы",
+    journalSub:"Окуучулардын бир жумалык баалары.", searchStudent:"Окуучуну издөө...",
+    scheduleTitle:"Сабактардын жадыбалы", shift:"Биринчи смена",
+    week:"ОКУУ ЖУМАСЫ", community:"МЕКТЕП ЖАМААТЫ",
+    studentTitle:"Окуучулар жана ата-энелер",
+    studentSub:"Окуучулардын тизмеси жана ата-энелердин байланыштары.",
+    addStudent:"＋ Окуучу кошуу", searchName:"Аты боюнча издөө...",
+    parent:"Ата-эне / камкорчу", contact:"Байланыш",
+    team:"БИЗДИН ЖАМААТ", teacherTitle:"Мугалимдер",
+    teacherSub:"Мектептин педагогикалык курамы.", addTeacher:"＋ Мугалим кошуу",
+    news:"МЕКТЕП ЖАҢЫЛЫКТАРЫ", announceTitle:"Жарыялар",
+    announceSub:"Окуучулар жана ата-энелер үчүн жаңылыктар.",
+    create:"＋ Жарыя түзүү",
+    notice1:"5, 7 жана 9-класстардын ата-энелерин чакырабыз. Чейректин жыйынтыгын талкуулайбыз.",
+    notice2:"5, 7 жана 9-класстардын окуучулары үчүн мектептик этап.",
+    notice3:"Майрамдык концертке баарыңызды күтөбүз!",
+    noticeDate1:"25-ноябрь · 17:30", noticeDate2:"28-ноябрь · 10:00",
+    noticeDate3:"2-декабрь · 14:00", analytics:"АНАЛИТИКА",
+    reportsTitle:"Мектептин отчёттору", reportsSub:"Учурдагы чейректин жыйынтыгы.",
+    print:"Басып чыгаруу / PDF", summary:"Класстар боюнча жыйынтык",
+    settings:"МЕКТЕПТИН ЖӨНДӨӨЛӨРҮ",
+    adminTitle:"Башкаруу",
+    adminSub:"Окуу жылын жана жөндөөлөрдү башкаруу.",
+    general:"Жалпы жөндөөлөр", schoolName:"Окуу жайдын аталышы",
+    academicYear:"Окуу жылы", parentNotify:"Ата-энелерге билдирүүлөр",
+    notifySub:"Баалар жана сабакка келбөө тууралуу билдирүүлөр",
+    bilingual:"Орус жана кыргыз тилдери",
+    interfaceLang:"Күндөлүктүн интерфейс тили",
+    demo:"Демонстрациялык үлгү. Аты-жөндөр жана маалыматтар ойдон чыгарылган.",
+    demoButton:"Бул демонстрациялык үлгү.",
+    dayNames:["Дүйшөмбү","Шейшемби","Шаршемби","Бейшемби","Жума"],
+    subjects:["Математика","Орус тили","Тарых","Кыргыз тили","Биология","Дене тарбия"]
+  }
+};
+
+const firstNames = ["Алина","Бекзат","Айдана","Нурбек","Мээрим","Эрмек","Арууке","Данияр","Сезим","Темир","Айпери","Бакыт","Жанна","Элдияр","Назгуль","Руслан","Каныкей","Адилет","Айсулуу","Мирлан"];
+const lastNames = ["Осмонова","Садыков","Токтогулова","Ибраимов","Абдиева","Жумабеков","Касымова","Асанов","Бейшеналиева","Исаков","Мамбетова","Калиев","Эсенова","Турсунов","Орозова","Ниязов","Кадырова","Болотбеков","Сариева","Мусаев"];
+const parentNames = ["Гульмира","Эрлан","Назира","Самат","Айгуль","Бакыт","Чолпон","Кубаныч","Жылдыз","Марат","Айжан","Нурлан","Салтанат","Азамат","Бермет","Таалай","Асель","Эмил","Динара","Болот"];
+
+const students = Array.from({ length: 60 }, (_, i) => ({
+  name: firstNames[i % 20] + " " + lastNames[i % 20],
+  parent: parentNames[i % 20] + " " + lastNames[(i + 7) % 20],
+  grade: [5, 7, 9][Math.floor(i / 20)],
+  id: i
+}));
+
+let language = "ru";
+let currentPage = "dashboard";
+const colors = ["#f0edff", "#e7f8f2", "#fff0f4", "#fff5e4", "#eaf5ff"];
+
+function selectedClass() {
+  return document.querySelector(".class-select")?.value || "5";
+}
+
+function render() {
+  const words = translations[language];
+
+  document.getElementById("recentRows").innerHTML = [0, 1, 2, 20, 21].map((id, i) => {
+    const student = students[id];
+    const subjects = language === "ru"
+      ? ["Математика", "Русский язык", "История", "Биология", "География"]
+      : ["Математика", "Орус тили", "Тарых", "Биология", "География"];
+
+    return `<tr>
+      <td><i class="avatar">${student.name[0]}</i>${student.name}</td>
+      <td>${student.grade}</td><td>${subjects[i]}</td>
+      <td><span class="badge">${[5, 4, 5, 3, 4][i]}</span></td>
+      <td>23.11.2026</td>
+    </tr>`;
+  }).join("");
+
+  const studentQuery = (document.getElementById("searchStudent")?.value || "").toLowerCase();
+  document.getElementById("studentRows").innerHTML = students
+    .filter(s => s.grade == selectedClass() &&
+      (!studentQuery || s.name.toLowerCase().includes(studentQuery) ||
+       s.parent.toLowerCase().includes(studentQuery)))
+    .map(s => `<tr>
+      <td><i class="avatar" style="background:${colors[s.id % 5]}">${s.name[0]}</i>${s.name}</td>
+      <td>${s.grade}</td><td>${s.parent}</td>
+      <td>+996 555 ${100000 + s.id * 137}</td>
+      <td><span class="badge">96%</span></td>
+    </tr>`).join("");
+
+  document.getElementById("journalRows").innerHTML = students
+    .filter(s => s.grade == selectedClass())
+    .map((s, i) => `<tr><td>${s.name}</td>
+      ${Array.from({ length: 5 }, (_, j) =>
+        `<td><span class="badge">${(i * 3 + j * 2) % 5 + 1}</span></td>`).join("")}
+      <td>4.2</td></tr>`).join("");
+
+  document.getElementById("scheduleGrid").innerHTML = words.dayNames
+    .map((day, d) => `<div class="day"><h3>${day}</h3>
+      ${Array.from({ length: 6 }, (_, i) => `<div class="lesson">
+        <b>${words.subjects[(i + d) % words.subjects.length]}</b>
+        <small>${8 + i}:00 · ${language === "ru" ? "каб." : "каб."} ${101 + i * 3}</small>
+      </div>`).join("")}
+    </div>`).join("");
+
+  const teacherList = language === "ru"
+    ? ["Елена Петрова — Математика","Бакыт Садыков — Кыргызский язык","Анна Иванова — Русский язык","Марат Осмонов — История","Айжан Токтогулова — Биология","Нурлан Асанов — Физкультура"]
+    : ["Елена Петрова — Математика","Бакыт Садыков — Кыргыз тили","Анна Иванова — Орус тили","Марат Осмонов — Тарых","Айжан Токтогулова — Биология","Нурлан Асанов — Дене тарбия"];
+
+  document.getElementById("teacherGrid").innerHTML = teacherList
+    .map(name => `<div class="card teacher"><i class="avatar">${name[0]}</i>${name}</div>`)
+    .join("");
+}
+
+function setLanguage() {
+  language = language === "ru" ? "kg" : "ru";
+  document.documentElement.lang = language;
+  const words = translations[language];
+
+  document.querySelectorAll("[data-i]").forEach(element => {
+    const key = element.dataset.i;
+    if (words[key]) element.textContent = words[key];
+  });
+
+  document.querySelectorAll("[data-placeholder]").forEach(element => {
+    element.placeholder = words[element.dataset.placeholder];
+  });
+
+  document.querySelectorAll(".class-select option").forEach(option => {
+    if (option.value === "all") {
+      option.textContent = words.allClasses;
+    } else {
+      option.textContent = language === "ru"
+        ? option.value + " класс"
+        : option.value + "-класс";
+    }
+  });
+
+  document.getElementById("language").textContent =
+    language === "ru" ? "РУС / KG" : "KG / РУС";
+
+  go(currentPage);
+}
+
+function go(page) {
+  currentPage = page;
+
+  document.querySelectorAll(".section").forEach(section => {
+    section.hidden = section.id !== "page-" + page;
+  });
+
+  document.querySelectorAll("nav button").forEach(button => {
+    button.classList.toggle("active", button.dataset.page === page);
+  });
+
+  const activeButton = document.querySelector(`[data-page="${page}"] b`);
+  document.getElementById("crumb").textContent =
+    activeButton?.textContent || translations[language].dashboard;
+
+  render();
+}
+
+document.getElementById("nav").addEventListener("click", event => {
+  const button = event.target.closest("[data-page]");
+  if (button) go(button.dataset.page);
+});
+
+document.getElementById("language").addEventListener("click", setLanguage);
+document.getElementById("searchStudent").addEventListener("input", render);
+
+document.getElementById("searchJournal").addEventListener("input", event => {
+  document.querySelectorAll("#journalRows tr").forEach(row => {
+    row.hidden = !row.textContent.toLowerCase()
+      .includes(event.target.value.toLowerCase());
+  });
+});
+
+document.querySelectorAll(".class-select").forEach(select => {
+  select.addEventListener("change", () => {
+    document.querySelectorAll(".class-select").forEach(other => {
+      if ([...other.options].some(option => option.value === select.value)) {
+        other.value = select.value;
+      }
+    });
+    render();
+  });
+});
+
+render();
+</script>
+</body>
+</html>
